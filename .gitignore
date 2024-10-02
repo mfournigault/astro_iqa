@@ -1,0 +1,22 @@
+# Ignore the image files that are downloaded from the web
+/data/*.fits.fz
+
+# Fichiers de log
+*.log
+
+# Répertoires de build
+/build/
+/dist/
+
+# Fichiers de configuration d'IDE
+/.vscode/
+
+# Fichiers de système d'exploitation
+.DS_Store
+Thumbs.db
+
+# Fichiers temporaires
+*.tmp
+*.swp
+*.bak
+*.old
