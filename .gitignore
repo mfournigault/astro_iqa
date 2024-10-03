@@ -1,5 +1,5 @@
 # Ignore the image files that are downloaded from the web
-/data/*.fits.fz
+/data/raw/*.fits.fz
 
 # Fichiers de log
 *.log
