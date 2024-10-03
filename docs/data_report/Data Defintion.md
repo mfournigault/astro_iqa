@@ -1,36 +1,41 @@
-# Data and Feature Definitions
+# Building the Datasets for SOM and Deep Learning Models
 
-This document provides a central hub for the raw data sources, the processed/transformed data, and feature sets. More details of each dataset is provided in the data summary report. 
+The datasets used to train the Self-Organizing Map (SOM) and deep learning models are constructed through a systematic process:
 
-For each data, an individual report describing the data schema, the meaning of each data field, and other information that is helpful for understanding the data is provided. If the dataset is the output of processing/transforming/feature engineering existing data set(s), the names of the input data sets, and the links to scripts that are used to conduct the operation are also provided. 
+- **Source Extraction**: The initial step involves using a source extraction program to gather useful information from astronomical images. This process identifies and measures various sources detected within the images .
 
-When applicable, the Interactive Data Exploration, Analysis, and Reporting (IDEAR) utility developed by Microsoft is applied to explore and visualize the data, and generate the data report. Instructions of how to use IDEAR can be found [here](). 
+- **Clustering with SOM**: The extracted sources, totaling around 3,000,000, are then organized using the SOM algorithm. This algorithm clusters the sources into 20 distinct groups based on their characteristics, allowing for effective dimensionality reduction  .
 
-For each dataset, the links to the sample datasets in the _**Data**_ directory are also provided. 
+- **Representative Images**: From each cluster formed by the SOM, one representative source is selected. The original image pixels associated with these sources are combined to create representative images, which are significantly smaller (∼800 times) than the original images. This reduction aids in faster model training  .
 
-_**For ease of modifying this report, placeholder links are included in this page, for example a link to dataset 1, but they are just placeholders pointing to a non-existent page. These should be modified to point to the actual location.**_
+- **Input Data for Models**: The representative images serve as Input-1 for the deep learning model, while additional statistical information about the clusters (Input-2) is also provided. This dual-input approach enhances the model's ability to classify images accurately .
+
+- **Training and Validation**: The datasets are further validated by comparing the model's predictions against a robust set of unseen images, ensuring the model's reliability and performance .
+
+This structured approach to dataset construction allows for improved performance and efficiency in classifying astronomical images.
 
 
 ## Raw Data Sources
 
 
-| Dataset Name | Original Location   | Destination Location  | Data Movement Tools / Scripts | Link to Report |
-| ---:| ---: | ---: | ---: | -----: |
-| Dataset 1 | Brief description of its orignal location | Brief description of its destination location | [script1.py](link/to/python/script/file/in/Code) | [Dataset 1 Report](link/to/report1)|
-| Dataset 2 | Brief description of its orignal location | Brief description of its destination location | [script2.R](link/to/R/script/file/in/Code) | [Dataset 2 Report](link/to/report2)|
+Raw data sources are images captured by the MegaCam camera at the Canada-France-Hawaii Telescope (CFHT).
+The images are distributed in FITS format and can be downloaded at the url http://www.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/en/search/ (Using MegaCam as the instrument).
+The dataset of raw images includes the images referenced in the paper and additional downloaded from the CADC archive.
+Each FITS file contains 36 CCD captures, and each capture has a size of 2048x4612 pixels. So each FITS file contains 36 source images.
 
+As published in the paper, authors trained the SOM model using a subtantial dataset consisting of 3,000,000 sources extracted from the images. 
+The sources are objects extracted from the images by using the SExtractor software.
+4000 sources are extracted in average on each CCD image, meaning that 144,000 sources can be extracted from each FITS file.
+Meaning that a minimum of 21 FITS files are needed to reach the 3,000,000 sources. As in the end we want to classify images into 5 categories, we need to have at least 4 representative FITS files for each category to train the SOM model.
 
-* Dataset1 summary. <Provide brief summary of the data, such as how to access the data. More detailed information should be in the Dataset1 Report.>
-* Dataset2 summary. <Provide brief summary of the data, such as how to access the data. More detailed information should be in the Dataset2 Report.> 
+Further thoughts required to determine the number of images needed to train the deep learning model.
 
 ## Processed Data
-| Processed Dataset Name | Input Dataset(s)   | Data Processing Tools/Scripts | Link to Report |
-| ---:| ---: | ---: | ---: | 
-| Processed Dataset 1 | [Dataset1](link/to/dataset1/report), [Dataset2](link/to/dataset2/report) | [Python_Script1.py](link/to/python/script/file/in/Code) | [Processed Dataset 1 Report](link/to/report1)|
-| Processed Dataset 2 | [Dataset2](link/to/dataset2/report) |[script2.R](link/to/R/script/file/in/Code) | [Processed Dataset 2 Report](link/to/report2)|
 
-* Processed Data1 summary. <Provide brief summary of the processed data, such as why you want to process data in this way. More detailed information about the processed data should be in the Processed Data1 Report.>
-* Processed Data2 summary. <Provide brief summary of the processed data, such as why you want to process data in this way. More detailed information about the processed data should be in the Processed Data2 Report.> 
+**Sources** are extracted from images by using the software SExtractor.
+For each FITS file present in the directory "./data/raw", the software will produce a LDAC file in the format "FITS_1.0".
+
+**The source catalog** used to train the SOM model is built by combining all the LDAC files produced by the SExtractor software.
 
 ## Feature Sets
 
