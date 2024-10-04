@@ -17,7 +17,6 @@ This structured approach to dataset construction allows for improved performance
 
 ## Raw Data Sources
 
-
 Raw data sources are images captured by the MegaCam camera at the Canada-France-Hawaii Telescope (CFHT).
 The images are distributed in FITS format and can be downloaded at the url http://www.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/en/search/ (Using MegaCam as the instrument).
 The dataset of raw images includes the images referenced in the paper and additional downloaded from the CADC archive.
@@ -35,14 +34,21 @@ Further thoughts required to determine the number of images needed to train the 
 **Sources** are extracted from images by using the software SExtractor.
 For each FITS file present in the directory "./data/raw", the software will produce a LDAC file in the format "FITS_1.0".
 
-**The source catalog** used to train the SOM model is built by combining all the LDAC files produced by the SExtractor software.
+**The source catalog** used to train the SOM model is built by combining all the LDAC files produced by the SExtractor software. For each object, SExtractor is used to output the following features:
+- X and Y coordinates of the object in the image,
+- ISO0,
+- ELONGATION,
+- ELLIPTICITY,
+- CLASS_STAR,
+- BACKGROUND.
+The exposure time of the image is also added to the catalog as it can significantly affect the quality and characteristics of the detected sources.
+
+**Representative images** are created by combining the pixels of the original images associated with the sources selected by the SOM model. For each cluster, a representative object is randomly selected, and the corresponding cutout image extracted off the ccd image. The representative image is a concatenation of the cutout images for each cluster. The representative images are stored in the directory "./data/processed/".
+
+**The hit value** of each cutout compiled in the representative image is also extracted from the SOM model and used as auxiliary input for the deep learning model. The hit value is the number of objects associated to the cluster for the given CCD image.
+
 
 ## Feature Sets
 
 | Feature Set Name | Input Dataset(s)   | Feature Engineering Tools/Scripts | Link to Report |
 | ---:| ---: | ---: | ---: | 
-| Feature Set 1 | [Dataset1](link/to/dataset1/report), [Processed Dataset2](link/to/dataset2/report) | [R_Script2.R](link/to/R/script/file/in/Code) | [Feature Set1 Report](link/to/report1)|
-| Feature Set 2 | [Processed Dataset2](link/to/dataset2/report) |[SQL_Script2.sql](link/to/sql/script/file/in/Code) | [Feature Set2 Report](link/to/report2)|
-
-* Feature Set1 summary. <Provide detailed description of the feature set, such as the meaning of each feature. More detailed information about the feature set should be in the Feature Set1 Report.>
-* Feature Set2 summary. <Provide detailed description of the feature set, such as the meaning of each feature. More detailed information about the feature set should be in the Feature Set2 Report.> 
