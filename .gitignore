@@ -1,6 +1,7 @@
 # Ignore the image files that are downloaded from the web
 /data/raw/*.fits.fz
 
+
 # Fichiers de log
 *.log
 
@@ -20,3 +21,4 @@ Thumbs.db
 *.swp
 *.bak
 *.old
+docs/project/~$$AIQ_algorithm_data_flow.~vsdx
