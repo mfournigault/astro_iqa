@@ -1,0 +1,37 @@
+IntraSOM Training Report
+Project: som_iqa
+
+Input Data:
+Features: 7
+Samples: 2104028
+Cells: 14728196
+
+--------------------------------------------------
+Initialization Parameters:
+
+Map Size: 15 columns and 16 lines
+Training Polygon: None
+Lattice: Hexagonal
+Normalization: Variance
+Initialization: Randomic
+Neighborhood Function: Gaussian
+Number of Labels: 0
+
+--------------------------------------------------
+Training Parameters:
+
+Rough Training:
+Size: 2
+Initial Ratio: 6.0
+Final Ratio: 1.5
+
+Finetube Training:
+Size: 2
+Initial Ratio: 2.0
+Final Ratio: 1
+
+--------------------------------------------------
+Training Evaluation:
+
+Quantization Error: 1.0145
+Topographic Error: 0.1221

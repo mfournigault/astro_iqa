@@ -1,4 +1,4 @@
-# Ignore the image files that are downloaded from the web
+cb# Ignore the image files that are downloaded from the web
 /data/raw/*.fits.fz
 
 
@@ -22,3 +22,7 @@ Thumbs.db
 *.bak
 *.old
 docs/project/~$$AIQ_algorithm_data_flow.~vsdx
+
+# Ignore temp results of the som modeling
+/src/modeling/Plots/
+/src/modeling/Results/
