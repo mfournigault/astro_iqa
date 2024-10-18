@@ -24,5 +24,6 @@ Thumbs.db
 docs/project/~$$AIQ_algorithm_data_flow.~vsdx
 
 # Ignore temp results of the som modeling
-/src/modeling/Plots/
-/src/modeling/Results/
+# /src/modeling/Plots/
+# /src/modeling/Results/
+/data/for_modeling/Results/params_som_iqa.json
