@@ -1,3 +1,4 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:28a2b7b98206ddf9a54cfa6b78cacca764cbdc98a18fbf3db74eaf8acda2be62
-size 156
+Column Index,Column Name,Type of Variable,"Values (range, levels, examples, etc)",Short Description,Joining Keys with others datasets?
+1,,,,,
+2,,,,,
+3,,,,,

@@ -1,5 +1,14 @@
-cb# Ignore the image files that are downloaded from the web
-/data/raw/*.fits.fz
+# Ignore the image files that are downloaded from the web
+*.fits.gz
+*.fits.fz
+*.fit
+*.fits
+*.seq
+
+# Ignore the big data files that are stored on hugging face
+*.ldac
+*.hdf5
+*.parquet.gz
 
 
 # Fichiers de log
