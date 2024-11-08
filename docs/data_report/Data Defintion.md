@@ -48,7 +48,7 @@ The exposure time of the image is also added to the catalog as it can significan
 **The hit value** of each cutout compiled in the representative image is also extracted from the SOM model and used as auxiliary input for the deep learning model. The hit value is the number of objects associated to the cluster for the given CCD image.
 
 
-## Feature Sets
+## Access to the datasets
 
-| Feature Set Name | Input Dataset(s)   | Feature Engineering Tools/Scripts | Link to Report |
-| ---:| ---: | ---: | ---: | 
+The datasets used in the project are not shared in this repository. They are uploaded to a huggingface dataset. 
+To access the datasets, please send a request to the owner of this repository.

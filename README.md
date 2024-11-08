@@ -39,3 +39,8 @@ The deep neural network model is built with Keras.
 
 As no dataset has been shared by the authors, we built a dataset by following the procedure described in the paper and images captured by the MegaCam camera at the Canada-France-Hawaii Telescope (CFHT). 
 For details on the dataset, please refer to the data report in the `docs` folder.
+
+## Datasets used in the project
+
+The datasets used in the project are not shared in this repository. They are uploaded to a huggingface dataset. 
+To access the datasets, please send a request to the owner of this repository.
