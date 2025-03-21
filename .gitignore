@@ -36,3 +36,6 @@ docs/project/~$$AIQ_algorithm_data_flow.~vsdx
 # /src/modeling/Plots/
 # /src/modeling/Results/
 /data/for_modeling/Results/params_som_iqa.json
+/data/for_modeling/training_dataset/
+/data/for_modeling/validation_dataset/
+/data/for_modeling/test_dataset/
