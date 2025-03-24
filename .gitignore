@@ -25,6 +25,10 @@
 .DS_Store
 Thumbs.db
 
+# Ignore python cache files
+__pycache__/
+*.pyc
+
 # Fichiers temporaires
 *.tmp
 *.swp
@@ -39,3 +43,4 @@ docs/project/~$$AIQ_algorithm_data_flow.~vsdx
 /data/for_modeling/training_dataset/
 /data/for_modeling/validation_dataset/
 /data/for_modeling/test_dataset/
+/src/modeling/tfdbg2_logdir/
