@@ -50,6 +50,13 @@ def clean_and_split_catalog(
     catalog = catalog.dropna(subset=[label_column])
     if drop_columns:
         catalog = catalog.drop(columns=drop_columns)
+    
+    # Calculate class weights
+    class_weights = catalog[label_column].value_counts(normalize=True)
+    class_weights = class_weights.to_dict()
+    print("Class weights:")
+    print(class_weights)
+    print("-----------------")
 
     train_selec = np.random.rand(len(catalog.index)) < train_fraction
     train_df = catalog[train_selec]
@@ -68,7 +75,7 @@ def clean_and_split_catalog(
         if col in test_df.columns:
             test_df[col] = test_df[col].astype(str)
 
-    return train_df, val_df, test_df
+    return train_df, val_df, test_df, class_weights
 
 def df_to_dataset(
     dataframe: pd.DataFrame,
@@ -132,8 +139,22 @@ def main() -> None:
         default="../../data/",
         help="Specify the base data path."
     )
+    parser.add_argument(
+      "--train_fraction",
+      type=float,
+      default=0.8,
+      help="Specify the proportion of training data for the split, between 0 and 1"
+    )
+    parser.add_argument(
+      "--validation_fraction",
+      type=float,
+      default=0.5,
+      help="Specify the proportion of data for the split val/test, between 0 and 1"
+    )
     args = parser.parse_args()
     data_path = args.data_path
+    train_fraction = args.train_fraction
+    validation_fraction = args.validation_fraction
 
     fm_path = os.path.join(data_path, "for_modeling")
     catalog_paths = [
@@ -149,7 +170,9 @@ def main() -> None:
     train_df, val_df, test_df = clean_and_split_catalog(
         catalog=catalog,
         label_column="gt_label1",
-        drop_columns=["gt_label2", "OBJECT_ID"]
+        drop_columns=["gt_label2", "OBJECT_ID"],
+        train_fraction=train_fraction,
+        val_fraction=validation_fraction
     )
 
     print("Converting datasets ...")
