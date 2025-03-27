@@ -44,3 +44,8 @@ For details on the dataset, please refer to the data report in the `docs` folder
 
 The datasets used in the project are not shared in this repository. They are uploaded to a huggingface dataset. 
 To access the datasets, please send a request to the owner of this repository.
+
+## About the models
+
+The SOM model has been useful to show the classification power of some astronomical features computed on the images (with Sextractor, like ellipticity, CLASS_STAR, etc.). The SOM model is not used in the final classification model.
+As we cannot build the same dataset as the authors (hybrid images/structured data, with a lot of annotated images), we decided to build a deep neural network model from scratch. The model classifies the image quality only based on the astronomical features computed on the images.

@@ -58,10 +58,16 @@ def add_ground_truth_labels(row, annotations):
     Add ground truth labels to a row of the catalog DataFrame.
     """
     image_id = row["FITS_ID"]
-    if image_id in annotations["Image_id"].values:
-        print("Image_id: ", image_id)
-        label1 = annotations.loc[annotations["Image_id"] == image_id, "Label1"].values[0]
-        label2 = annotations.loc[annotations["Image_id"] == image_id, "Label2"].values[0]
+    # Remove a trailing 'p' for standardization
+    image_id_base = image_id.rstrip("p")
+    
+    # Standardize the 'Image_id' column values in annotations on the fly
+    standardized_ids = annotations["Image_id"].apply(lambda x: x.rstrip("p"))
+    
+    if image_id_base in standardized_ids.values:
+        match_index = standardized_ids[standardized_ids == image_id_base].index[0]
+        label1 = annotations.loc[match_index, "Label1"]
+        label2 = annotations.loc[match_index, "Label2"]
         return [label1, label2]
     else:
         print("Image_id not found: ", image_id)
@@ -72,8 +78,6 @@ def merge_annotations_with_catalog(catalog_df, annotations_df):
     """
     Merge the annotations DataFrame with the catalog DataFrame.
     """
-    print("Catalog: ", catalog_df)
-    print("Annotations: ", annotations_df)
     catalog_df[["gt_label1", "gt_label2"]] = catalog_df.apply(
         lambda row: add_ground_truth_labels(row, annotations_df), 
         result_type="expand", 
