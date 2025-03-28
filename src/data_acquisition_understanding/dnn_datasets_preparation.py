@@ -167,7 +167,7 @@ def main() -> None:
     print("Reading and concatening catalogs ...")
     catalog = read_and_concat_catalogs(catalog_paths)
     print("Cleaning and splitting catalog ...")
-    train_df, val_df, test_df = clean_and_split_catalog(
+    train_df, val_df, test_df, class_weights = clean_and_split_catalog(
         catalog=catalog,
         label_column="gt_label1",
         drop_columns=["gt_label2", "OBJECT_ID"],
