@@ -158,10 +158,10 @@ def main() -> None:
 
     fm_path = os.path.join(data_path, "for_modeling")
     catalog_paths = [
-        os.path.join(fm_path, "objects_catalog_cadc2.parquet.gz"),
-        os.path.join(fm_path, "objects_catalog_ngc0869.parquet.gz"),
-        os.path.join(fm_path, "objects_catalog_ngc0896.parquet.gz"),
-        os.path.join(fm_path, "objects_catalog_ngc7000.parquet.gz")
+        os.path.join(fm_path, "objects_catalog_cadc_bronze.parquet.gz"),
+        os.path.join(fm_path, "objects_catalog_ngc0869_bronze.parquet.gz"),
+        os.path.join(fm_path, "objects_catalog_ngc0896_bronze.parquet.gz"),
+        os.path.join(fm_path, "objects_catalog_ngc7000_bronze.parquet.gz")
     ]
 
     print("Reading and concatening catalogs ...")
