@@ -20,6 +20,12 @@ def read_and_concat_catalogs(catalog_paths: list[str]) -> pd.DataFrame:
     dataframes = []
     for path in catalog_paths:
         df = pd.read_parquet(path, engine="auto")
+        #TODO: Remove this line when the CADC catalog is fixed
+        # The data errors (observed when training the model of the full dataset, loss became NaN, with all Nan values cleaned)
+        # seem to occur for images labelled with BGP
+        if path.find("cadc") != -1:
+            df = df[0:1873000]
+            print("CADC catalog size: ", df.shape)
         dataframes.append(df)
     return pd.concat(dataframes, ignore_index=True)
 
@@ -79,10 +85,10 @@ def clean_and_split_catalog(
 
 def df_to_dataset(
     dataframe: pd.DataFrame,
-    label_column: str,
-    shuffle: bool = True,
-    shuffling_seed: int = 42,
-    batch_size: int = 32
+    label_column: str
+    # shuffle: bool = True,
+    # shuffling_seed: int = 42,
+    # batch_size: int = 32
 ) -> tf.data.Dataset:
     """
     Convert a pandas DataFrame into a tf.data.Dataset.
@@ -101,9 +107,10 @@ def df_to_dataset(
     labels = df_copy.pop(label_column)
     df_copy = {key: value.to_numpy()[:,tf.newaxis] for key, value in dataframe.items()}
     ds = tf.data.Dataset.from_tensor_slices((dict(df_copy), labels))
-    if shuffle:
-        ds = ds.shuffle(buffer_size=len(df_copy)//2, seed=shuffling_seed, reshuffle_each_iteration=True)
-    ds = ds.batch(batch_size)
+    #FIX: we provide raw dataset, any transformation should be done ahead of modeling
+    # if shuffle:
+    #     ds = ds.shuffle(buffer_size=len(df_copy)//2, seed=shuffling_seed, reshuffle_each_iteration=True)
+    # ds = ds.batch(batch_size)
     return ds
 
 def save_datasets(
@@ -176,9 +183,9 @@ def main() -> None:
     )
 
     print("Converting datasets ...")
-    train_dataset = df_to_dataset(train_df, "gt_label1", True, 42, 128)
-    val_dataset = df_to_dataset(val_df, "gt_label1", True, 42, 128)
-    test_dataset = df_to_dataset(test_df, "gt_label1", True, 42, 128)
+    train_dataset = df_to_dataset(train_df, "gt_label1") #, True, 42, 128)
+    val_dataset = df_to_dataset(val_df, "gt_label1") #, True, 42, 128)
+    test_dataset = df_to_dataset(test_df, "gt_label1") #, True, 42, 128)
 
     print("Saving datasets ...")
     save_datasets(train_dataset, val_dataset, test_dataset, fm_path)
