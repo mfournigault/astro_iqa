@@ -83,7 +83,7 @@ def clean_and_split_catalog(
 
     return train_df, val_df, test_df, class_weights
 
-def df_to_dataset(
+def dataframe_to_tf_dataset(
     dataframe: pd.DataFrame,
     label_column: str
     # shuffle: bool = True,
@@ -113,7 +113,7 @@ def df_to_dataset(
     # ds = ds.batch(batch_size)
     return ds
 
-def save_datasets(
+def save_tf_datasets(
     train_dataset: tf.data.Dataset,
     val_dataset: tf.data.Dataset,
     test_dataset: tf.data.Dataset,
@@ -133,6 +133,51 @@ def save_datasets(
     val_dataset.save(os.path.join(output_dir, "validation_dataset"))
     test_dataset.save(os.path.join(output_dir, "test_dataset"))
 
+
+def custom_reader_func(datasets: tf.data.Dataset) -> tf.data.Dataset:
+    return datasets.interleave(lambda x: x, num_parallel_calls=tf.data.AUTOTUNE)
+
+def datasets_loader(data_path: str, 
+                    shuffling_size: int, 
+                    batch_size: int, 
+                    label_name: str,
+                    custom_reader_func) -> tuple[tf.data.Dataset, tf.data.Dataset, tf.data.Dataset]:
+    """
+    Load TensorFlow datasets from the specified directory.
+    Args:
+        data_path (str): Path to the directory containing the datasets.
+        shuffling_size (int): Buffer size for shuffling. As the data present in the dataset might be hundreds or thousands
+            samples annotated with the same label, we need to shuffle the dataset to avoid having the same label in the same batch.
+            In consequence the shuffling size should be large (ie. at least 100K for a dataset of 1M samples).
+            It has a very huge impact on model performances during training.
+        batch_size (int): Batch size for the datasets.
+        custom_reader_func: Custom function to read the datasets.
+    Returns:
+        tuple[tf.data.Dataset, tf.data.Dataset, tf.data.Dataset]: Tuple of training, validation, and test datasets.
+    """
+    training_dataset = tf.data.Dataset.load(path=os.path.join(data_path, "training_dataset"), reader_func=custom_reader_func)
+    validation_dataset = tf.data.Dataset.load(path=os.path.join(data_path, "validation_dataset"), reader_func=custom_reader_func)
+    testing_dataset = tf.data.Dataset.load(path=os.path.join(data_path, "test_dataset"), reader_func=custom_reader_func)
+
+    training_dataset = training_dataset.shuffle(buffer_size=shuffling_size).batch(batch_size=batch_size).prefetch(tf.data.AUTOTUNE)
+    validation_dataset = validation_dataset.shuffle(buffer_size=shuffling_size).batch(batch_size=batch_size).prefetch(tf.data.AUTOTUNE)
+    testing_dataset = testing_dataset.shuffle(buffer_size=shuffling_size).batch(batch_size=batch_size).prefetch(tf.data.AUTOTUNE)
+
+    # As we separated the labels from the features, we need to convert the labels to StringLookups
+    label_lookup = tf.keras.layers.StringLookup()
+    label_lookup.adapt(training_dataset.map(lambda x, y: y))
+    print("Label vocabulary: ", label_lookup.get_vocabulary())
+
+    training_dataset = training_dataset.map(lambda x, y: (x, label_lookup(y)))
+    validation_dataset = validation_dataset.map(lambda x, y: (x, label_lookup(y)))
+    testing_dataset = testing_dataset.map(lambda x, y: (x, label_lookup(y)))
+
+    # removing gt_label1 from the features
+    training_dataset = training_dataset.map(lambda x, y: ({k: v for k, v in x.items() if k != label_name}, y))
+    validation_dataset = validation_dataset.map(lambda x, y: ({k: v for k, v in x.items() if k != label_name}, y))
+    testing_dataset = testing_dataset.map(lambda x, y: ({k: v for k, v in x.items() if k != label_name}, y))
+
+    return training_dataset, validation_dataset, testing_dataset
 
 def main() -> None:
     """
@@ -183,12 +228,12 @@ def main() -> None:
     )
 
     print("Converting datasets ...")
-    train_dataset = df_to_dataset(train_df, "gt_label1") #, True, 42, 128)
-    val_dataset = df_to_dataset(val_df, "gt_label1") #, True, 42, 128)
-    test_dataset = df_to_dataset(test_df, "gt_label1") #, True, 42, 128)
+    train_dataset = dataframe_to_tf_dataset(train_df, "gt_label1") #, True, 42, 128)
+    val_dataset = dataframe_to_tf_dataset(val_df, "gt_label1") #, True, 42, 128)
+    test_dataset = dataframe_to_tf_dataset(test_df, "gt_label1") #, True, 42, 128)
 
     print("Saving datasets ...")
-    save_datasets(train_dataset, val_dataset, test_dataset, fm_path)
+    save_tf_datasets(train_dataset, val_dataset, test_dataset, fm_path)
     print("Finished.")
 
 if __name__ == "__main__":
