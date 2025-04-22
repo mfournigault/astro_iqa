@@ -164,9 +164,9 @@ def get_category_encoding_layer(name: str,
 
 
 def encode_inputs(dataset: tf.data.Dataset, 
-                  feature_headers: dict(str, str), 
-                  numeric_headers: dict(str, str), 
-                  categorical_headers: dict(str, str)) -> tuple(dict, list):
+                  feature_headers: Dict[str, str],
+                  numeric_headers: Dict[str, str],
+                  categorical_headers: Dict[str, str]) -> (dict, list):
     """
     Encode the inputs of the dataset using the specified feature headers.
 

@@ -1,8 +1,8 @@
 import tensorflow as tf
-from tf.keras import layers, Model
+from tensorflow.keras import layers, Model
 import tensorflow_recommenders as tfrs
 
-from typing import Dict
+from typing import List, Dict # Importing List from typing module
 
 def create_dcn_model(all_inputs: Dict[str, tf.keras.layers.Input],
                  encoded_inputs: List[tf.keras.layers.Layer],
