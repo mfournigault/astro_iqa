@@ -64,3 +64,30 @@ def create_dcn_model(all_inputs: Dict[str, tf.keras.layers.Input],
     model = Model(inputs=all_inputs, outputs=outputs)
 
     return model
+
+
+def create_dnn_model(
+        all_inputs: Dict[str, tf.keras.layers.Input],
+        encoded_inputs: List[tf.keras.layers.Layer],
+        num_hidden_layers: int=2, 
+        units_per_layer: int=64,
+        dropout_rate: float=0.15, 
+        l2: float=0.01) -> tf.keras.Model:
+    """
+    Create a model with embedding layers for categorical features.
+    """
+    all_features = layers.concatenate(encoded_inputs)
+    x = layers.BatchNormalization()(all_features)
+    for i in range(num_hidden_layers, 0, -1):
+        num_units = units_per_layer * i
+        x = layers.Dense(units=num_units,
+                         activation="relu",
+                         kernel_regularizer=tf.keras.regularizers.l2(l2),
+                         bias_regularizer=tf.keras.regularizers.l2(l2))(x)
+        x = layers.BatchNormalization()(x)
+    x = layers.Dropout(dropout_rate)(x)
+
+    outputs = layers.Dense(units=5, activation="sigmoid", kernel_regularizer=tf.keras.regularizers.l2(l2), bias_regularizer=tf.keras.regularizers.l2(l2))(x)
+    model = Model(inputs=all_inputs, outputs=outputs)
+
+    return model
