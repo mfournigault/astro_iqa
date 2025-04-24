@@ -50,5 +50,9 @@ The exposure time of the image is also added to the catalog as it can significan
 
 ## Access to the datasets
 
-The datasets used in the project are not shared in this repository. They are uploaded to a huggingface dataset. 
+The datasets used in the project are not shared in this repository. They are uploaded to a huggingface dataset, at the url https://huggingface.co/datasets/selfmaker/astro_iqa. 
+Two kinds of datasets are available:
+1- Raw data: FITS files containing the raw images and the LDAC files containing the sources extracted from the images.
+2- For modeling data: parquet files containing the compilation of the LDAC files, plus the quality annotations, to be read as dataframes.
+
 To access the datasets, please send a request to the owner of this repository.
