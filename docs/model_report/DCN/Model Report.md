@@ -17,7 +17,7 @@ Brief report on the simple DNN creation, training and evaluation.
 * Features encoding
 	* for numerical features, the data are normalized with the class RobustNormalisation regarding the median and the interquartile range, to reduce the influence of outliers
 	* for categorical features, the data are encoded either with StringLookup or IntegerLookup.
-* Type of model built: A simple DNN with N hidden dense layers.
+* Type of model built: A DCN V2 stacked or concatenated with a DNN.
 
 ## Model Description
 
