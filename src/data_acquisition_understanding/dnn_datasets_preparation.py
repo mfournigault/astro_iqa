@@ -177,7 +177,7 @@ def datasets_loader(data_path: str,
     validation_dataset = validation_dataset.map(lambda x, y: ({k: v for k, v in x.items() if k != label_name}, y))
     testing_dataset = testing_dataset.map(lambda x, y: ({k: v for k, v in x.items() if k != label_name}, y))
 
-    return training_dataset, validation_dataset, testing_dataset
+    return training_dataset, validation_dataset, testing_dataset, label_lookup.get_vocabulary()
 
 def main() -> None:
     """
