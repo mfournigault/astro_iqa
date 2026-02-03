@@ -64,6 +64,15 @@ def clean_and_split_catalog(
     print(class_weights)
     print("-----------------")
 
+    # TODO: to increase stratification of classes and avoid that rare classes can be
+    # missing in some splits, it is better to use sklearn as follows:
+    # from sklearn.model_selection import train_test_split
+    # train_df, val_test_df = train_test_split(
+    #     catalog, 
+    #     test_size=(1 - train_fraction), 
+    #     stratify=catalog[label_column], # C'est ici que la stratification opère
+    #     random_state=random_seed
+    # )
     train_selec = np.random.rand(len(catalog.index)) < train_fraction
     train_df = catalog[train_selec]
     val_test_df = catalog[~train_selec]
