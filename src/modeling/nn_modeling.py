@@ -27,14 +27,15 @@ def create_dcn_model(all_inputs: Dict[str, tf.keras.layers.Input],
     """
     all_features = layers.concatenate(encoded_inputs)
 
-    cross_layer = tfrs.layers.dcn.Cross(projection_dim=None,
-                                        kernel_initializer="glorot_uniform",
-                                        kernel_regularizer=tf.keras.regularizers.l2(l2),
-                                        bias_regularizer=tf.keras.regularizers.l2(l2))
-
     # According to the publicaiton, with more than 2 cross layers, performances are not improved that much
     x = all_features
     for i in range(num_cross_layers):
+        # Bug fix: in the case of more than 1 cross layer, we need to create a new layer instance for each layer
+        # to avoid sharing weights between the layers. Before, the same instance was used for all layers, which is incorrect.
+        cross_layer = tfrs.layers.dcn.Cross(projection_dim=None,
+                                            kernel_initializer="glorot_uniform",
+                                            kernel_regularizer=tf.keras.regularizers.l2(l2),
+                                            bias_regularizer=tf.keras.regularizers.l2(l2))
         x = cross_layer(all_features, x)
 
     # we stack the DNN on top of the cross layer, but we can also concatenate the outputs of the cross layer and the DNN
@@ -46,23 +47,25 @@ def create_dcn_model(all_inputs: Dict[str, tf.keras.layers.Input],
     else:
         raise ValueError("dcn_dnn must be either 'stack' or 'concatenate'")
 
-    x = dnn_inputs
+    dnn_x = dnn_inputs
     for i in range(num_hidden_layers, 0, -1):
         num_units = units_per_layer * i
-        x = layers.Dense(units=num_units,
+        dnn_x = layers.Dense(units=num_units,
                          activation="relu",
                          kernel_regularizer=tf.keras.regularizers.l2(l2),
-                         bias_regularizer=tf.keras.regularizers.l2(l2))(x)
-        x = layers.BatchNormalization()(x)
-        x = layers.Dropout(dropout_rate)(x)
+                         bias_regularizer=tf.keras.regularizers.l2(l2))(dnn_x)
+        dnn_x = layers.BatchNormalization()(dnn_x)
+        dnn_x = layers.Dropout(dropout_rate)(dnn_x)
 
     if dcn_dnn == "stack":
-        softmax_inputs = x
+        classifier_inputs = dnn_x
     else:  # we managed unkown cases earlier
-        softmax_inputs = layers.concatenate([dcn_outputs, x])
+        classifier_inputs = layers.concatenate([dcn_outputs, dnn_x])
 
     # outputs = layers.Dense(units=5, activation="sigmoid", kernel_regularizer=tf.keras.regularizers.l2(l2), bias_regularizer=tf.keras.regularizers.l2(l2))(x)
-    outputs = layers.Dense(units=5, activation="sigmoid")(softmax_inputs)
+    # NOTE: in the case of IQA, we want that one sample can belong to multiple classes, so we use sigmoid activation
+    # For example, a sample can be bad tracking and bad seeing at the same time.
+    outputs = layers.Dense(units=5, activation="sigmoid")(classifier_inputs)
 
     # Create the model.
     model = Model(inputs=all_inputs, outputs=outputs)
@@ -94,6 +97,8 @@ def create_dnn_model(
         x = layers.BatchNormalization()(x)
     x = layers.Dropout(dropout_rate)(x)
 
+    # NOTE: in the case of IQA, we want that one sample can belong to multiple classes, so we use sigmoid activation
+    # For example, a sample can be bad tracking and bad seeing at the same time.
     outputs = layers.Dense(units=5, activation="sigmoid", kernel_regularizer=tf.keras.regularizers.l2(l2), bias_regularizer=tf.keras.regularizers.l2(l2))(x)
     model = Model(inputs=all_inputs, outputs=outputs)
 
